@@ -1,0 +1,7 @@
+.env
+*.log
+vscode
+.vscode
+bcwserver
+go.mod
+go.sum
