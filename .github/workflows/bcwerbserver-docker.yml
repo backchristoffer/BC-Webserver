@@ -1,4 +1,4 @@
-name: build and push http-test
+name: build and push bc-wserver
 
 on:
   push:
@@ -18,8 +18,8 @@ jobs:
         password: ${{ secrets.SECRET }}
     - uses: actions/checkout@v3
     - name: Build the Docker image and push to github
-      run: docker build . --file Dockerfile --tag http-test:latest
+      run: docker build . --file Dockerfile --tag bc-wserver:latest
     - name: Tag image
-      run: docker image tag http-test:latest ghcr.io/backchristoffer/http-test:latest
+      run: docker image tag bc-wserver:latest ghcr.io/backchristoffer/bc-wserver:latest
     - name: Push image to github
-      run: docker image push ghcr.io/backchristoffer/http-test:latest
+      run: docker image push ghcr.io/backchristoffer/bc-wserver:latest
