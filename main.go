@@ -12,18 +12,26 @@ func bcw(w http.ResponseWriter, req *http.Request) {
 }
 
 func fs(w http.ResponseWriter, req *http.Request) {
-	directory := "."
-	filePath := filepath.Join(directory, req.URL.Path[len("/fs/"):])
 
-	_, err := os.Stat(filePath)
-	if os.IsNotExist(err) {
-		http.Error(w, fmt.Sprintf("File '%s' not found", req.URL.Path), http.StatusNotFound)
+	currentUser, err := user.Current()
+	if err != nil {
+		http.Error(w, "Failed to get current user's information", http.StatusInternalServerError)
 		return
 	}
 
+	dataDir := filepath.Join(currentUser.HomeDir, "data")
+
+	// Create the directory if it doesn't exist
+	if _, err := os.Stat(dataDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(dataDir, 0700); err != nil {
+			http.Error(w, "Failed to create data directory", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	filePath := filepath.Join(dataDir, req.URL.Path[len("/fs/"):])
 	http.ServeFile(w, req, filePath)
 }
-
 func main() {
 	http.HandleFunc("/", bcw)
 	http.HandleFunc("/fs/", fs)
